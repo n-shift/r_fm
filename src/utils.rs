@@ -7,14 +7,14 @@
 // }
 // getter_usize! {
 //     Foo,
-//     FooGetters,
+//     <pub> FooGetters,
 //     bar_get = bar,
 //     baz_get = baz, // trailing comma is optional
 // }
 #[macro_export]
 macro_rules! getter_usize {
-    ($to:ty, $t:ident, $($getter:ident = $field:ident),*$(,)?) => {
-        trait $t {
+    ($to:ty, $v:vis $t:ident, $($getter:ident = $field:ident),*$(,)?) => {
+        $v trait $t {
             $(fn $getter(&self) -> usize;)*
         }
         impl $t for $to {
@@ -32,8 +32,8 @@ macro_rules! getter_usize {
 // for some reason last.fm wraps booleans into 0/1
 #[macro_export]
 macro_rules! getter_bool {
-    ($to:ty, $t:ident, $($getter:ident = $field:ident),*$(,)?) => {
-        trait $t {
+    ($to:ty, $v:vis $t:ident, $($getter:ident = $field:ident),*$(,)?) => {
+        $v trait $t {
             $(fn $getter(&self) -> bool;)*
         }
         impl $t for $to {
@@ -49,7 +49,7 @@ macro_rules! getter_bool {
 // autogenerate raw structure
 // if not defined in struct, fields are String type by default
 // * usage
-// raw_gen!(Foo {bar: usize}, baz);
+// raw_gen!(<pub> Foo {<pub> bar: usize}, baz);
 // //result:
 // #[derive(Deserialize, Debug)]
 // struct Foo {
@@ -58,11 +58,11 @@ macro_rules! getter_bool {
 // }
 #[macro_export]
 macro_rules! raw_gen {
-    ($struct:ident { $($def:tt)* }$(,)? $($field:ident),*$(,)?) => {
+    ($v:vis $struct:ident { $($def:tt)* }$(,)? $($field:ident),*$(,)?) => {
         #[derive(Deserialize, Debug)]
-        struct $struct {
+        $v struct $struct {
             $($def)*
-            $($field: String,)*
+            $($v $field: String,)*
         }
     }
 }

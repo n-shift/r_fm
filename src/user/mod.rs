@@ -1,47 +1,10 @@
-use serde::Deserialize;
+mod raw;
+use raw::SizedImages;
 use std::convert::From;
 
-use crate::{from_raw, getter_bool, getter_usize, raw_gen};
+use crate::from_raw;
+use raw::{URBool, URUsize, RegUsize};
 
-type SizedImages = Vec<std::collections::HashMap<String, String>>;
-
-raw_gen!(Registered {}, unixtime);
-getter_usize!(Registered, RegUsize, time = unixtime);
-
-raw_gen! {
-    UserRaw {
-        image: SizedImages,
-        registered: Registered,
-    }
-    name,
-    realname,
-    age,
-    country,
-    gender,
-    subscriber,
-    bootstrap,
-    playlists,
-    playcount,
-    artist_count,
-    album_count,
-    track_count,
-    url,
-}
-raw_gen!(Raw { user: UserRaw });
-
-getter_usize! {
-    UserRaw,
-    URUsize,
-    aged = age,
-    bootstraps = bootstrap,
-    lists = playlists,
-    plays = playcount,
-    artists = artist_count,
-    albums = album_count,
-    tracks = track_count,
-}
-
-getter_bool!(UserRaw, URBool, is_pro = subscriber);
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -63,8 +26,8 @@ pub struct UserInfo {
     url: String,
 }
 
-impl From<UserRaw> for UserInfo {
-    fn from(item: UserRaw) -> Self {
+impl From<raw::User> for UserInfo {
+    fn from(item: raw::User) -> Self {
         from_raw! {
             item,
             {
@@ -98,7 +61,7 @@ impl UserInfo {
             .build(get_info_params)
             .send()
             .await?
-            .json::<Raw>()
+            .json::<raw::Raw>()
             .await?
             .user
             .into();
