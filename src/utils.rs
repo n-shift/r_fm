@@ -27,6 +27,25 @@ macro_rules! getter_usize {
     };
 }
 
+// same as getter_usize
+// getter implementation: self.$field != "0"
+// for some reason last.fm wraps booleans into 0/1
+#[macro_export]
+macro_rules! getter_bool {
+    ($to:ty, $t:ident, $($getter:ident = $field:ident),*$(,)?) => {
+        trait $t {
+            $(fn $getter(&self) -> bool;)*
+        }
+        impl $t for $to {
+            $(
+                fn $getter(&self) -> bool {
+                    self.$field != "0"
+                }
+            )*
+        }
+    };
+}
+
 // autogenerate raw structure
 // if not defined in struct, fields are String type by default
 // * usage

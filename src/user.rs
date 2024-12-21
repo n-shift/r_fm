@@ -1,12 +1,12 @@
 use serde::Deserialize;
 use std::convert::From;
 
-use crate::{from_raw, getter_usize, raw_gen};
+use crate::{from_raw, getter_bool, getter_usize, raw_gen};
 
 type SizedImages = Vec<std::collections::HashMap<String, String>>;
 
 raw_gen!(Registered {}, unixtime);
-getter_usize!(Registered, RegGetters, time = unixtime);
+getter_usize!(Registered, RegUsize, time = unixtime);
 
 raw_gen! {
     UserRaw {
@@ -31,9 +31,8 @@ raw_gen!(Raw { user: UserRaw });
 
 getter_usize! {
     UserRaw,
-    URGetters,
+    URUsize,
     aged = age,
-    subscribers = subscriber,
     bootstraps = bootstrap,
     lists = playlists,
     plays = playcount,
@@ -41,6 +40,8 @@ getter_usize! {
     albums = album_count,
     tracks = track_count,
 }
+
+getter_bool!(UserRaw, URBool, is_pro = subscriber);
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -50,7 +51,7 @@ pub struct UserInfo {
     age: usize,
     country: String,
     gender: String,
-    subscriber: usize,
+    subscriber: bool,
     bootstrap: usize,
     playlists: usize,
     playcount: usize,
@@ -76,7 +77,7 @@ impl From<UserRaw> for UserInfo {
             },
             {
                 age = item.aged(),
-                subscriber = item.subscribers(),
+                subscriber = item.is_pro(),
                 bootstrap = item.bootstraps(),
                 playlists = item.lists(),
                 playcount = item.plays(),
