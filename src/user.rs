@@ -1,11 +1,7 @@
 use serde::Deserialize;
 use std::convert::From;
 
-use crate::{
-    getter_usize,
-    raw_gen,
-    from_raw,
-};
+use crate::{from_raw, getter_usize, raw_gen};
 
 type SizedImages = Vec<std::collections::HashMap<String, String>>;
 
@@ -31,7 +27,7 @@ raw_gen! {
     track_count,
     url,
 }
-raw_gen!(Raw {user: UserRaw});
+raw_gen!(Raw { user: UserRaw });
 
 getter_usize! {
     UserRaw,
@@ -97,7 +93,14 @@ use super::Client;
 impl UserInfo {
     pub async fn get(client: &Client, username: &str) -> anyhow::Result<Self> {
         let get_info_params = &[("method", "user.getInfo"), ("user", username)];
-        let info: UserInfo = client.build(get_info_params).send().await?.json::<Raw>().await?.user.into();
+        let info: UserInfo = client
+            .build(get_info_params)
+            .send()
+            .await?
+            .json::<Raw>()
+            .await?
+            .user
+            .into();
         Ok(info)
     }
 }
