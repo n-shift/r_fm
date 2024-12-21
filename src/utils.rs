@@ -39,7 +39,7 @@ macro_rules! getter_usize {
 // }
 #[macro_export]
 macro_rules! raw_gen {
-    ($struct:ident { $($def:tt)* } $($field:ident),*$(,)?) => {
+    ($struct:ident { $($def:tt)* }$(,)? $($field:ident),*$(,)?) => {
         #[derive(Deserialize, Debug)]
         struct $struct {
             $($def)*

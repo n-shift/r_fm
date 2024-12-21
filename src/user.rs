@@ -5,7 +5,7 @@ use crate::{from_raw, getter_usize, raw_gen};
 
 type SizedImages = Vec<std::collections::HashMap<String, String>>;
 
-raw_gen!(Registered {} unixtime);
+raw_gen!(Registered {}, unixtime);
 getter_usize!(Registered, RegGetters, time = unixtime);
 
 raw_gen! {
