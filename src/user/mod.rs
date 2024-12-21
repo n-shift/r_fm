@@ -3,8 +3,7 @@ use raw::SizedImages;
 use std::convert::From;
 
 use crate::from_raw;
-use raw::{URBool, URUsize, RegUsize};
-
+use raw::{RegUsize, URBool, URUsize};
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -53,12 +52,34 @@ impl From<raw::User> for UserInfo {
     }
 }
 
+pub struct User<'a>(pub &'a str);
+impl User<'_> {
+    pub async fn get_info(&self, client: &Client) -> anyhow::Result<UserInfo> {
+        UserInfo::get(client, self.0).await
+    }
+    pub async fn get_friends(&self, client: &Client) -> anyhow::Result<Vec<String>> {
+        let params = &[("method", "user.getFriends"), ("user", self.0)];
+        let friends = client
+            .build(params)
+            .send()
+            .await?
+            .json::<raw::Friends>()
+            .await?
+            .friends
+            .user
+            .into_iter()
+            .map(|f| f.name)
+            .collect::<Vec<String>>();
+        Ok(friends)
+    }
+}
+
 use super::Client;
 impl UserInfo {
-    pub async fn get(client: &Client, username: &str) -> anyhow::Result<Self> {
-        let get_info_params = &[("method", "user.getInfo"), ("user", username)];
+    async fn get(client: &Client, username: &str) -> anyhow::Result<Self> {
+        let params = &[("method", "user.getInfo"), ("user", username)];
         let info: UserInfo = client
-            .build(get_info_params)
+            .build(params)
             .send()
             .await?
             .json::<raw::Raw>()

@@ -1,5 +1,5 @@
-use serde::Deserialize;
 use crate::{getter_bool, getter_usize, raw_gen};
+use serde::Deserialize;
 pub type SizedImages = Vec<std::collections::HashMap<String, String>>;
 
 raw_gen!(pub Raw { pub user: User });
@@ -24,6 +24,10 @@ raw_gen! {
     url,
 }
 
+raw_gen!(pub Friends {pub friends: FriendList});
+raw_gen!(pub FriendList {pub user: Vec<Friend>});
+raw_gen!(pub Friend {pub name: String});
+
 getter_bool!(User, pub URBool, is_pro = subscriber);
 getter_usize!(Registered, pub RegUsize, time = unixtime);
 getter_usize! {
@@ -37,5 +41,3 @@ getter_usize! {
     albums = album_count,
     tracks = track_count,
 }
-
-
