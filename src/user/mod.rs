@@ -57,6 +57,7 @@ impl User<'_> {
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<UserInfo> {
         UserInfo::get(client, self.0).await
     }
+    // TODO: pager
     pub async fn get_friends(&self, client: &Client) -> anyhow::Result<Vec<String>> {
         let params = &[("method", "user.getFriends"), ("user", self.0)];
         let friends = client
