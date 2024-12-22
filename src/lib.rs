@@ -1,8 +1,9 @@
 const API_ROOT: &str = "http://ws.audioscrobbler.com/2.0/";
 type Param<'a> = (&'a str, &'a str);
 
-pub mod user;
 pub mod artist;
+pub mod shared;
+pub mod user;
 mod utils;
 pub struct Client {
     key: String,

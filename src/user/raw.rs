@@ -1,6 +1,6 @@
+use crate::shared::SizedImages;
 use crate::{getter_bool, getter_usize, raw_gen};
 use serde::Deserialize;
-pub type SizedImages = Vec<std::collections::HashMap<String, String>>;
 
 raw_gen!(pub Raw { pub user: User });
 raw_gen!(pub Registered {}, unixtime);

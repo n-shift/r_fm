@@ -1,5 +1,5 @@
 mod raw;
-use raw::SizedImages;
+use crate::shared::SizedImages;
 use std::convert::From;
 
 use crate::from_raw;
