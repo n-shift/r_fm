@@ -1,6 +1,6 @@
 mod raw;
 use crate::from_raw;
-use crate::shared::{SizedImages, Param};
+use crate::shared::SizedImages;
 use raw::Bio;
 use raw::SUsize;
 
@@ -52,10 +52,11 @@ impl Spec {
     }
 }
 
+use std::collections::HashMap;
 pub struct Artist {
     spec: Spec,
     id: String,
-    params: Option<Vec<Param>>,
+    pub params: HashMap<String, String>,
 }
 
 use reqwest::Method;
@@ -63,26 +64,19 @@ impl Artist {
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<ArtistInfo> {
         let r = client
             .build(Method::GET)
-            .query(&[("method", "artist.getInfo")])
-            .query(&[(self.spec.as_str(), self.id.as_str())])
-            .query(&self.params.clone().unwrap_or_default());
-        let i: ArtistInfo = r
-            .send()
-            .await?
-            .json::<raw::Raw>()
-            .await?
-            .artist
-            .into();
+            .query(&[
+                ("method", "artist.getInfo"),
+                (self.spec.as_str(), self.id.as_str()),
+            ])
+            .query(&self.params);
+        let i: ArtistInfo = r.send().await?.json::<raw::Raw>().await?.artist.into();
         Ok(i)
     }
     pub fn new(spec: Spec, id: String) -> Self {
-        Self { spec, id, params: None }
-    }
-    pub fn params(self, params: Vec<Param>) -> Self {
         Self {
-            spec: self.spec,
-            id: self.id,
-            params: Some(params),
+            spec,
+            id,
+            params: HashMap::new(),
         }
     }
 }

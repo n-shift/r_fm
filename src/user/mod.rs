@@ -54,17 +54,34 @@ impl From<raw::User> for UserInfo {
 
 use reqwest::Method;
 
-pub struct User<'a>(pub &'a str);
-impl User<'_> {
+use std::collections::HashMap;
+pub struct User {
+    name: String,
+    pub params: HashMap<String, String>,
+}
+
+use super::Client;
+impl User {
+    pub fn new(name: String) -> Self {
+        Self {
+            name,
+            params: HashMap::new(),
+        }
+    }
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<UserInfo> {
-        UserInfo::get(client, self.0).await
+        let r = client
+            .build(Method::GET)
+            .query(&[("method", "user.getInfo"), ("user", self.name.as_str())]);
+        let i: UserInfo = r.send().await?.json::<raw::Raw>().await?.user.into();
+        Ok(i)
     }
     // TODO: pager
     pub async fn get_friends(&self, client: &Client) -> anyhow::Result<Vec<String>> {
-        let params = &[("method", "user.getFriends"), ("user", self.0)];
-        let friends = client
+        let r = client
             .build(Method::GET)
-            .query(params)
+            .query(&[("method", "user.getFriends"), ("user", self.name.as_str())])
+            .query(&self.params);
+        let f = r
             .send()
             .await?
             .json::<raw::Friends>()
@@ -74,23 +91,6 @@ impl User<'_> {
             .into_iter()
             .map(|f| f.name)
             .collect::<Vec<String>>();
-        Ok(friends)
-    }
-}
-
-use super::Client;
-impl UserInfo {
-    async fn get(client: &Client, username: &str) -> anyhow::Result<Self> {
-        let params = &[("method", "user.getInfo"), ("user", username)];
-        let info: UserInfo = client
-            .build(Method::GET)
-            .query(params)
-            .send()
-            .await?
-            .json::<raw::Raw>()
-            .await?
-            .user
-            .into();
-        Ok(info)
+        Ok(f)
     }
 }

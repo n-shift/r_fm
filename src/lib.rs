@@ -21,9 +21,6 @@ impl Client {
     fn build(&self, method: reqwest::Method) -> reqwest::RequestBuilder {
         self.client
             .request(method, API_ROOT)
-            .query(&[
-                ("api_key", self.key.as_str()),
-                ("format", "json"),
-            ])
+            .query(&[("api_key", self.key.as_str()), ("format", "json")])
     }
 }
