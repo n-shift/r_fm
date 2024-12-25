@@ -44,7 +44,7 @@ pub enum Spec {
 }
 
 impl Spec {
-    fn to_param(&self) -> &str {
+    fn as_str(&self) -> &str {
         match self {
             Self::Name => "artist",
             Self::Mbid => "mbid",
@@ -64,7 +64,7 @@ impl Artist {
         let r = client
             .build(Method::GET)
             .query(&[("method", "artist.getInfo")])
-            .query(&[(self.spec.to_param(), self.id.as_str())])
+            .query(&[(self.spec.as_str(), self.id.as_str())])
             .query(&self.params.clone().unwrap_or_default());
         let i: ArtistInfo = r
             .send()

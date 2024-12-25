@@ -36,9 +36,7 @@ getter_usize! {
 impl Stats {
     pub fn userplaycount(&self) -> Option<usize> {
         let x = self.userplaycount.clone();
-        if x.is_none() {
-            return None;
-        }
+        x.as_ref()?;
         Some(x.unwrap().parse::<usize>().unwrap())
     }
 }
