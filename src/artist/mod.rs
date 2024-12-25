@@ -37,6 +37,21 @@ impl From<raw::Artist> for ArtistInfo {
     }
 }
 
+impl From<raw::SArtist> for SimilarArtist {
+    fn from(item: raw::SArtist) -> Self {
+        from_raw! {
+            item,
+            {
+                name,
+                mbid
+            },
+            {
+                similarity = item.similarity()
+            }
+        }
+    }
+}
+
 #[derive(Clone, Copy)]
 pub enum Spec {
     Name,
@@ -59,6 +74,14 @@ pub struct Artist {
     pub params: HashMap<String, String>,
 }
 
+#[allow(dead_code)]
+#[derive(Debug)]
+pub struct SimilarArtist {
+    name: String,
+    mbid: Option<String>,
+    similarity: f32,
+}
+
 use reqwest::Method;
 impl Artist {
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<ArtistInfo> {
@@ -71,6 +94,26 @@ impl Artist {
             .query(&self.params);
         let i: ArtistInfo = r.send().await?.json::<raw::Raw>().await?.artist.into();
         Ok(i)
+    }
+    pub async fn get_similar(&self, client: &Client) -> anyhow::Result<Vec<SimilarArtist>> {
+        let r = client
+            .build(Method::GET)
+            .query(&[
+                ("method", "artist.getSimilar"),
+                (self.spec.as_str(), self.id.as_str()),
+            ])
+            .query(&self.params);
+        let s = r
+            .send()
+            .await?
+            .json::<raw::SimilarArtists>()
+            .await?
+            .similarartists
+            .artist
+            .into_iter()
+            .map(SimilarArtist::from)
+            .collect::<Vec<_>>();
+        Ok(s)
     }
     pub fn new(spec: Spec, id: String) -> Self {
         Self {

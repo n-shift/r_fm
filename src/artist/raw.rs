@@ -26,6 +26,10 @@ raw_gen! {
     url,
 }
 
+raw_gen!(pub SimilarArtists {pub similarartists: ArtistList});
+raw_gen!(pub ArtistList { pub artist: Vec<SArtist>});
+raw_gen!(pub SArtist { pub mbid: Option<String>,}, name, r#match);
+
 getter_usize! {
     Stats,
     pub SUsize,
@@ -38,5 +42,11 @@ impl Stats {
         let x = self.userplaycount.clone();
         x.as_ref()?;
         Some(x.unwrap().parse::<usize>().unwrap())
+    }
+}
+
+impl SArtist {
+    pub fn similarity(&self) -> f32 {
+        self.r#match.parse::<f32>().unwrap()
     }
 }
