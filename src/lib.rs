@@ -1,5 +1,4 @@
 const API_ROOT: &str = "http://ws.audioscrobbler.com/2.0/";
-type Param<'a> = (&'a str, &'a str);
 
 pub mod artist;
 pub mod shared;
@@ -19,8 +18,12 @@ impl std::convert::From<&str> for Client {
 }
 
 impl Client {
-    fn build(&self, params: &[Param]) -> reqwest::RequestBuilder {
-        let params = &[params, &[("api_key", &self.key), ("format", "json")]].concat();
-        self.client.get(API_ROOT).query(params)
+    fn build(&self, method: reqwest::Method) -> reqwest::RequestBuilder {
+        self.client
+            .request(method, API_ROOT)
+            .query(&[
+                ("api_key", self.key.as_str()),
+                ("format", "json"),
+            ])
     }
 }

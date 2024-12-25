@@ -58,10 +58,12 @@ pub struct Artist {
     params: Option<Vec<Param>>,
 }
 
+use reqwest::Method;
 impl Artist {
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<ArtistInfo> {
         let r = client
-            .build(&[("method", "artist.getInfo")])
+            .build(Method::GET)
+            .query(&[("method", "artist.getInfo")])
             .query(&[(self.spec.to_param(), self.id.as_str())])
             .query(&self.params.clone().unwrap_or_default());
         let i: ArtistInfo = r

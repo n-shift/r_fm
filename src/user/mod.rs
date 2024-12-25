@@ -52,6 +52,8 @@ impl From<raw::User> for UserInfo {
     }
 }
 
+use reqwest::Method;
+
 pub struct User<'a>(pub &'a str);
 impl User<'_> {
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<UserInfo> {
@@ -61,7 +63,8 @@ impl User<'_> {
     pub async fn get_friends(&self, client: &Client) -> anyhow::Result<Vec<String>> {
         let params = &[("method", "user.getFriends"), ("user", self.0)];
         let friends = client
-            .build(params)
+            .build(Method::GET)
+            .query(params)
             .send()
             .await?
             .json::<raw::Friends>()
@@ -80,7 +83,8 @@ impl UserInfo {
     async fn get(client: &Client, username: &str) -> anyhow::Result<Self> {
         let params = &[("method", "user.getInfo"), ("user", username)];
         let info: UserInfo = client
-            .build(params)
+            .build(Method::GET)
+            .query(params)
             .send()
             .await?
             .json::<raw::Raw>()
