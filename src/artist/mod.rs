@@ -1,6 +1,6 @@
 mod raw;
 use crate::from_raw;
-use crate::shared::{SizedImages, Opts};
+use crate::shared::{SizedImages, Param};
 use raw::Bio;
 use raw::SUsize;
 
@@ -52,26 +52,37 @@ impl Spec {
     }
 }
 
-pub struct Artist<'a>(pub Spec, pub &'a str);
-impl Artist<'_> {
-    pub async fn get_info(&self, client: &Client, opts: Opts<'_>) -> anyhow::Result<ArtistInfo> {
-        ArtistInfo::get(client, self.0, self.1, opts).await
-    }
+pub struct Artist {
+    spec: Spec,
+    id: String,
+    params: Option<Vec<Param>>,
 }
 
-use super::Client;
-impl ArtistInfo {
-    async fn get(client: &Client, spec: Spec, val: &str, opts: Opts<'_>) -> anyhow::Result<Self> {
-        let dpar = &[("method", "artist.getInfo"), (spec.to_param(), val)];
-        let params = &[dpar, opts.unwrap_or(&[])].concat();
-        let info: ArtistInfo = client
-            .build(params)
+impl Artist {
+    pub async fn get_info(&self, client: &Client) -> anyhow::Result<ArtistInfo> {
+        let r = client
+            .build(&[("method", "artist.getInfo")])
+            .query(&[(self.spec.to_param(), self.id.as_str())])
+            .query(&self.params.clone().unwrap_or_default());
+        let i: ArtistInfo = r
             .send()
             .await?
             .json::<raw::Raw>()
             .await?
             .artist
             .into();
-        Ok(info)
+        Ok(i)
+    }
+    pub fn new(spec: Spec, id: String) -> Self {
+        Self { spec, id, params: None }
+    }
+    pub fn params(self, params: Vec<Param>) -> Self {
+        Self {
+            spec: self.spec,
+            id: self.id,
+            params: Some(params),
+        }
     }
 }
+
+use super::Client;
