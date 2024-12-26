@@ -1,5 +1,6 @@
 const API_ROOT: &str = "http://ws.audioscrobbler.com/2.0/";
 
+pub mod album;
 pub mod artist;
 pub mod shared;
 pub mod tag;
