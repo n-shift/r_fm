@@ -4,17 +4,16 @@ use crate::shared::SizedImages;
 use raw::Bio;
 use raw::SUsize;
 
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct ArtistInfo {
-    name: String,
-    mbid: Option<String>,
-    listeners: usize,
-    playcount: usize,
-    userplaycount: Option<usize>,
-    image: Vec<SizedImages>,
-    url: String,
-    bio: Bio,
+    pub name: String,
+    pub mbid: Option<String>,
+    pub listeners: usize,
+    pub playcount: usize,
+    pub userplaycount: Option<usize>,
+    pub image: Vec<SizedImages>,
+    pub url: String,
+    pub bio: Bio,
 }
 
 impl From<raw::Artist> for ArtistInfo {
@@ -74,12 +73,11 @@ pub struct Artist {
     pub params: HashMap<String, String>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct SimilarArtist {
-    name: String,
-    mbid: Option<String>,
-    similarity: f32,
+    pub name: String,
+    pub mbid: Option<String>,
+    pub similarity: f32,
 }
 
 use reqwest::Method;

@@ -5,24 +5,23 @@ use std::convert::From;
 use crate::from_raw;
 use raw::{RegUsize, URBool, URUsize};
 
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct UserInfo {
-    name: String,
-    realname: String,
-    age: usize,
-    country: String,
-    gender: String,
-    subscriber: bool,
-    bootstrap: usize,
-    playlists: usize,
-    playcount: usize,
-    artist_count: usize,
-    album_count: usize,
-    track_count: usize,
-    image: SizedImages,
-    registered: usize,
-    url: String,
+    pub name: String,
+    pub realname: String,
+    pub age: usize,
+    pub country: String,
+    pub gender: String,
+    pub subscriber: bool,
+    pub bootstrap: usize,
+    pub playlists: usize,
+    pub playcount: usize,
+    pub artist_count: usize,
+    pub album_count: usize,
+    pub track_count: usize,
+    pub image: SizedImages,
+    pub registered: usize,
+    pub url: String,
 }
 
 impl From<raw::User> for UserInfo {
