@@ -2,6 +2,7 @@ const API_ROOT: &str = "http://ws.audioscrobbler.com/2.0/";
 
 pub mod artist;
 pub mod shared;
+pub mod tag;
 pub mod user;
 mod utils;
 pub struct Client {

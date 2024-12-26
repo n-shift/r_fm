@@ -118,11 +118,10 @@ impl Artist {
     pub async fn search(&self, client: &Client) -> anyhow::Result<Vec<String>> {
         let r = client
             .build(Method::GET)
-            .query(
-                &[
-                    ("method", "artist.search"),
-                    (self.spec.as_str(), self.id.as_str()),
-                ])
+            .query(&[
+                ("method", "artist.search"),
+                (self.spec.as_str(), self.id.as_str()),
+            ])
             .query(&self.params);
         let l = r
             .send()
