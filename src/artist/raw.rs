@@ -30,6 +30,11 @@ raw_gen!(pub SimilarArtists {pub similarartists: ArtistList});
 raw_gen!(pub ArtistList { pub artist: Vec<SArtist>});
 raw_gen!(pub SArtist { pub mbid: Option<String>,}, name, r#match);
 
+raw_gen!(pub MatchedArtists { pub results: Results });
+raw_gen!(pub Results { pub artistmatches: ArtistMatches });
+raw_gen!(pub ArtistMatches { pub artist: Vec<Match> });
+raw_gen!(pub Match { pub name: String });
+
 getter_usize! {
     Stats,
     pub SUsize,

@@ -115,6 +115,28 @@ impl Artist {
             .collect::<Vec<_>>();
         Ok(s)
     }
+    pub async fn search(&self, client: &Client) -> anyhow::Result<Vec<String>> {
+        let r = client
+            .build(Method::GET)
+            .query(
+                &[
+                    ("method", "artist.search"),
+                    (self.spec.as_str(), self.id.as_str()),
+                ])
+            .query(&self.params);
+        let l = r
+            .send()
+            .await?
+            .json::<raw::MatchedArtists>()
+            .await?
+            .results
+            .artistmatches
+            .artist
+            .into_iter()
+            .map(|m| m.name)
+            .collect::<Vec<_>>();
+        Ok(l)
+    }
     pub fn new(spec: Spec, id: String) -> Self {
         Self {
             spec,
