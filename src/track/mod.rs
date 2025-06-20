@@ -1,35 +1,36 @@
 mod raw;
-use crate::from_raw;
-use crate::shared::SizedImages;
-use raw::AUsize;
+use crate::artist::Artist;
+use crate::album::Album;
 
 #[derive(Debug)]
-pub struct AlbumInfo {
+pub struct TrackInfo {
     pub name: String,
-    pub artist: String,
-    pub mbid: Option<String>,
-    pub image: Vec<SizedImages>,
+    pub artist: Artist;
+    pub album: Option<Album>,
+    pub duration: Option<usize>,
     pub listeners: usize,
     pub playcount: usize,
     pub userplaycount: Option<usize>,
+    pub userloved: Option<bool>,
     pub url: String,
 }
 
-impl From<raw::Album> for AlbumInfo {
+impl From<raw::Track for TrackInfo {
     fn from(item: raw::Album) -> Self {
         from_raw! {
             item,
             {
                 name,
-                artist,
-                mbid,
-                image,
-                url,
-                userplaycount
+                url
             },
             {
-                listeners = item.listeners(),
-                playcount = item.playcount()
+                artist = ,
+                album = ,
+                duration = ,
+                listeners = ,
+                playcount = ,
+                userplaycount = ,
+                userloved = 
             }
         }
     }
@@ -37,7 +38,7 @@ impl From<raw::Album> for AlbumInfo {
 
 use std::collections::HashMap;
 #[derive(Debug)]
-pub struct Album {
+pub struct Track {
     spec: Spec,
     pub params: HashMap<String, String>,
 }
@@ -50,7 +51,7 @@ pub enum Spec {
 
 use super::Client;
 use reqwest::Method;
-impl Album {
+impl Track {
     pub fn new(spec: Spec) -> Self {
         Self {
             spec,
@@ -59,18 +60,18 @@ impl Album {
     }
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<AlbumInfo> {
         let r = client
-            .build(Method::GET, "album.getInfo")
+            .build(Method::GET, "track.getInfo")
             .query(
                 match &self.spec {
-                    Spec::Explicit(artist, album) => {
-                        vec![("artist".to_owned(), artist), ("album".to_owned(), album)]
+                    Spec::Explicit(artist, track) => {
+                        vec![("artist".to_owned(), artist), ("track".to_owned(), track)]
                     }
-                    Spec::Mbid(mbid) => vec![("mbid".to_owned(), mbid)],
+                    Spec::Mbid(mbid) => vec![("mbid".to_owned(), mbid)]
                 }
-                .as_slice(),
+                .as_slice()
             )
             .query(&self.params);
-        let i: AlbumInfo = r.send().await?.json::<raw::Raw>().await?.album.into();
+        let i: TrackInfo = r.send().await?.json::<raw::Raw>().await?.track.into();
         Ok(i)
     }
 }

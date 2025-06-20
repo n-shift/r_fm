@@ -41,8 +41,8 @@ impl Tag {
     }
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<TagInfo> {
         let r = client
-            .build(Method::GET)
-            .query(&[("method", "tag.getInfo"), ("tag", self.name.as_str())])
+            .build(Method::GET, "tag.getInfo")
+            .query(&[("tag", self.name.as_str())])
             .query(&self.params);
         let i: TagInfo = r.send().await?.json::<raw::Raw>().await?.tag.into();
         Ok(i)

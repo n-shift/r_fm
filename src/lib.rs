@@ -20,9 +20,13 @@ impl std::convert::From<&str> for Client {
 }
 
 impl Client {
-    fn build(&self, method: reqwest::Method) -> reqwest::RequestBuilder {
+    fn build(&self, http: reqwest::Method, method: &str) -> reqwest::RequestBuilder {
         self.client
-            .request(method, API_ROOT)
-            .query(&[("api_key", self.key.as_str()), ("format", "json")])
+            .request(http, API_ROOT)
+            .query(&[
+                ("api_key", self.key.as_str()),
+                ("method", method),
+                ("format", "json")
+            ])
     }
 }

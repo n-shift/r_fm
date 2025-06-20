@@ -84,22 +84,16 @@ use reqwest::Method;
 impl Artist {
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<ArtistInfo> {
         let r = client
-            .build(Method::GET)
-            .query(&[
-                ("method", "artist.getInfo"),
-                (self.spec.as_str(), self.id.as_str()),
-            ])
+            .build(Method::GET, "artist.getInfo")
+            .query(&[(self.spec.as_str(), self.id.as_str())])
             .query(&self.params);
         let i: ArtistInfo = r.send().await?.json::<raw::Raw>().await?.artist.into();
         Ok(i)
     }
     pub async fn get_similar(&self, client: &Client) -> anyhow::Result<Vec<SimilarArtist>> {
         let r = client
-            .build(Method::GET)
-            .query(&[
-                ("method", "artist.getSimilar"),
-                (self.spec.as_str(), self.id.as_str()),
-            ])
+            .build(Method::GET, "artist.getSimilar")
+            .query(&[(self.spec.as_str(), self.id.as_str())])
             .query(&self.params);
         let s = r
             .send()
@@ -115,11 +109,8 @@ impl Artist {
     }
     pub async fn search(&self, client: &Client) -> anyhow::Result<Vec<String>> {
         let r = client
-            .build(Method::GET)
-            .query(&[
-                ("method", "artist.search"),
-                (self.spec.as_str(), self.id.as_str()),
-            ])
+            .build(Method::GET, "artist.search")
+            .query(&[(self.spec.as_str(), self.id.as_str())])
             .query(&self.params);
         let l = r
             .send()

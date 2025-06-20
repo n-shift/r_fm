@@ -69,16 +69,16 @@ impl User {
     }
     pub async fn get_info(&self, client: &Client) -> anyhow::Result<UserInfo> {
         let r = client
-            .build(Method::GET)
-            .query(&[("method", "user.getInfo"), ("user", self.name.as_str())]);
+            .build(Method::GET, "user.getInfo")
+            .query(&[("user", self.name.as_str())]);
         let i: UserInfo = r.send().await?.json::<raw::Raw>().await?.user.into();
         Ok(i)
     }
     // TODO: pager
     pub async fn get_friends(&self, client: &Client) -> anyhow::Result<Vec<String>> {
         let r = client
-            .build(Method::GET)
-            .query(&[("method", "user.getFriends"), ("user", self.name.as_str())])
+            .build(Method::GET, "user.getFriends")
+            .query(&[("user", self.name.as_str())])
             .query(&self.params);
         let f = r
             .send()
